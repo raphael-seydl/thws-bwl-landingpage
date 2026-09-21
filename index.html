@@ -66,6 +66,12 @@
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
 <script>
+  gsap.registerPlugin(ScrollTrigger);
+
+  console.log("GSAP geladen:", gsap.version);
+  console.log("ScrollTrigger geladen:", ScrollTrigger);
+</script>
+<script>
 const qs=["Du möchtest verstehen, warum Marken und Produkte Menschen überzeugen.","Du analysierst gern Zusammenhänge – auch wenn nicht alles sofort klar ist.","Du findest es spannend, Ideen mit anderen in die Umsetzung zu bringen.","Du kannst dir vorstellen, einmal Verantwortung in einem Team zu übernehmen.","Wirtschaftliche Entscheidungen und ihre Folgen interessieren dich.","Du bist neugierig auf die Welt außerhalb deiner eigenen Komfortzone.","Du willst nicht nur lernen, sondern dein Wissen praktisch ausprobieren.","Du suchst ein Studium, das dir viele Richtungen offenhält."],a=[];
 function fitResult(score){if(score>=14)return {title:'BWL passt sehr gut zu dir.',text:'Du bringst viel Neugier, Gestaltungswillen und Interesse an wirtschaftlichen Zusammenhängen mit. Das sind starke Voraussetzungen, um dich im BWL-Studium wohlzufühlen.'};if(score>=8)return {title:'BWL könnte zu dir passen.',text:'Du zeigst Interesse an mehreren Themen, die in der BWL wichtig sind. Schau dir besonders die unterschiedlichen Schwerpunkte an – vielleicht findest du dort deine Richtung.'};return {title:'BWL ist vielleicht nicht dein erster Treffer.',text:'Deine Antworten sprechen aktuell eher für andere Studienrichtungen. Das ist völlig in Ordnung – ein Studienfach sollte zu deinen Interessen passen. Vielleicht helfen dir unsere Beratung und ein Blick auf verwandte Angebote weiter.'}}
 function draw(){let q=document.querySelector('#quiz'),n=a.filter(x=>x!==undefined).length;if(n===8){let r=fitResult(a.reduce((x,y)=>x+y,0));q.innerHTML='<div class="result"><p class="eyebrow">Dein Ergebnis</p><h3>'+r.title+'</h3><p>'+r.text+'</p><button class="button dark" onclick="a.length=0;draw()">Noch einmal starten</button></div>'}else q.innerHTML=qs.map((x,i)=>'<div class="q"><span class="qnum">0'+(i+1)+'</span><h3>'+x+'</h3><div class="answers">'+['Trifft zu','Teils / teils','Eher nicht'].map((z,j)=>'<button class="'+(a[i]===2-j?'on':'')+'" onclick="a['+i+']='+(2-j)+';draw()">'+z+'</button>').join('')+'</div></div>').join('');document.querySelector('#bar').style.width=n/8*100+'%';document.querySelector('#count').textContent=n+' von 8 beantwortet'}draw();

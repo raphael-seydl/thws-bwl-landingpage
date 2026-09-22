@@ -1,0 +1,69 @@
+/* Readable source layout is retained when JavaScript is unavailable. */
+.journey.section { height:auto; overflow:visible; background:#f5f5f1; }
+.journey .journey-step { opacity:1; transform:none; transition:none; }
+.journey .journey-copy { position:static; }
+.journey-panels .journey-wrap { width:calc(100% - clamp(32px,4.5vw,80px)); max-width:1800px; display:block; }
+.journey-panels .journey-copy { display:grid; grid-template-columns:1fr .48fr; gap:12px 48px; padding:0; align-items:end; margin-bottom:32px; }
+.journey-panels .journey-copy .eyebrow { grid-column:1 / -1; margin:0; color:#62625c; }
+.journey-panels .journey-copy h2 { font-size:clamp(2.8rem,4.3vw,4.8rem); }
+.journey-panels .journey-copy .journey-caption { max-width:400px; margin:0; color:#575750; font-size:.94rem; }
+.journey-panels .journey-visual[hidden] { display:none; }
+.journey-panels .journey-steps { position:relative; display:grid; gap:32px; border:0; padding:0; }
+.journey-panels .journey-step { position:relative; display:block; padding:0; border:0; overflow:hidden; background:#e7e7e1; scroll-margin-top:24px; }
+.journey-panels .journey-step > span { display:none; }
+.journey-photo { width:100%; height:auto; aspect-ratio:16/9; object-fit:cover; display:block; }
+.journey-panels .journey-panel-copy { padding:26px; background:#fff; }
+.journey-panels .journey-panel-copy b { display:block; color:#161613; font-size:clamp(1.65rem,2.7vw,2.65rem); letter-spacing:-.055em; }
+.journey-panels .journey-panel-copy p { color:#585851; line-height:1.5; font-size:.83rem; margin:10px 0 0; }
+.journey-panels .journey-panel-copy .journey-step-full { color:#242420; font-size:1rem; line-height:1.55; max-width:55ch; }
+.journey-preview { position:absolute; z-index:2; top:14px; left:14px; border:0; background:#fff; color:#161613; font:700 .85rem Arial,sans-serif; width:44px; height:44px; cursor:pointer; }
+.journey-preview-title { display:none; }
+.journey-preview[aria-current] { background:#f36c21; }
+.journey-navigation { display:flex; align-items:center; gap:8px; border-top:1px solid #ccccc4; padding-top:14px; margin-top:20px; }
+.journey-counter { margin-right:auto; font-size:.78rem; font-variant-numeric:tabular-nums; letter-spacing:.1em; }
+.journey-navigation a { display:grid; place-items:center; min-width:44px; min-height:44px; font-size:.8rem; border-bottom:2px solid transparent; }
+.journey-navigation a[aria-current] { border-color:#f36c21; font-weight:700; }
+.journey-navigation a:hover { background:#e7e7e1; }
+.journey-navigation a:focus-visible, .journey-preview:focus-visible { outline:3px solid #111; outline-offset:-4px; box-shadow:inset 0 0 0 6px #fff; }
+/* Native sticky releases in document flow without a generated pin spacer. */
+.journey-desktop.section { height:420svh; padding:0; }
+.journey-desktop .journey-wrap { position:sticky; top:0; height:100svh; padding:28px 0 20px; display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:auto minmax(0,1fr) auto; gap:24px; }
+.journey-desktop .journey-copy { margin:0; }
+.journey-desktop .journey-steps { display:block; align-self:stretch; min-height:0; isolation:isolate; overflow:clip; }
+.journey-desktop .journey-step { position:absolute; inset:0 auto 0 0; width:var(--panel-width); height:100%; will-change:transform,clip-path; }
+.journey-desktop .journey-photo { position:absolute; inset:0; width:100%; height:100%; aspect-ratio:auto; transition:filter .55s cubic-bezier(.22,.61,.36,1),opacity .55s ease; backface-visibility:hidden; }
+.journey-desktop .journey-step:not(.active) .journey-photo { filter:blur(1.8px) saturate(.68) contrast(.88) brightness(.74); opacity:.88; }
+.journey-desktop .journey-step.active .journey-photo { filter:none; opacity:1; }
+.journey-desktop .journey-panel-copy { position:absolute; bottom:20px; left:20px; right:20px; max-width:530px; padding:22px 26px; opacity:0; transform:translateY(10px); transition:opacity .2s,transform .3s; pointer-events:none; }
+.journey-desktop .active .journey-panel-copy { opacity:1; transform:none; transition-delay:.3s; }
+.journey-desktop .journey-panel-copy b { font-size:clamp(1.7rem,2.6vw,2.6rem); }
+.journey-desktop .journey-panel-copy p { margin-top:8px; }
+.journey-desktop .journey-panel-copy .journey-step-full { font-size:.94rem; }
+.journey-desktop .journey-preview { top:0; left:0; width:var(--preview-width); height:100%; background:linear-gradient(180deg,#0006,transparent 25%,transparent 55%,#0009); color:#fff; text-shadow:0 1px 6px #000; }
+.journey-desktop .journey-step:not(.active) .journey-preview { background:linear-gradient(180deg,#0008,rgba(0,0,0,.12) 28%,rgba(0,0,0,.18) 58%,#000a); }
+.journey-desktop .journey-preview > span:first-child { position:absolute; top:24px; left:50%; transform:translateX(-50%); }
+.journey-desktop .journey-preview-title { display:block; position:absolute; bottom:24px; left:50%; writing-mode:vertical-rl; transform:translateX(-50%) rotate(180deg); font-size:.95rem; letter-spacing:.025em; white-space:nowrap; }
+.journey-desktop .active .journey-preview { height:58px; background:#f36c21; color:#111; text-shadow:none; }
+.journey-desktop .active .journey-preview-title { display:none; }
+.journey-desktop .journey-navigation { margin:0; padding-top:4px; }
+@media (max-width:1100px) {
+  .journey-desktop .journey-panel-copy { left:14px; right:14px; bottom:14px; padding:18px; }
+  .journey-desktop .journey-copy h2 { font-size:3rem; }
+}
+@media (max-width:999px), (max-height:699px) {
+  .journey-panels .journey-copy { grid-template-columns:1fr; gap:20px; }
+  .journey-panels .journey-copy .journey-caption { max-width:540px; }
+  .journey-panels .journey-wrap { position:static; height:auto; }
+  .journey-panels .journey-panel-copy { padding:24px; }
+}
+@media (max-width:550px) {
+  .journey-panels .journey-copy h2 { font-size:2.6rem; }
+  .journey-panels .journey-panel-copy { padding:22px 20px; }
+  .journey-photo { aspect-ratio:4/3; }
+  .journey-navigation { gap:0; flex-wrap:wrap; }
+  .journey-counter { width:100%; margin-bottom:8px; }
+  .journey-navigation a { flex:1; }
+}
+@media (prefers-reduced-motion:reduce) {
+  .journey-panels *, .journey-panels *::before { transition:none !important; scroll-behavior:auto; }
+}

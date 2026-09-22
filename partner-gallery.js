@@ -12,6 +12,8 @@
   const counter = section.querySelector('.postcard-count');
   const help = section.querySelector('#postcard-help');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const chapters = document.documentElement.classList.contains('chapter-mode');
+  let previousButton, nextButton;
   // Deliberate order: Taiwan, Thailand, USA, then six European/Central Asian views.
   // Width is relative to the canvas; offsets are relative to its free vertical space.
   const art = [
@@ -39,6 +41,8 @@
     if (index !== current) {
       current = index;
       counter.textContent = `${String(index + 1).padStart(2,'0')} / 09`;
+      if (previousButton) previousButton.disabled = index === 0;
+      if (nextButton) nextButton.disabled = index === 8;
     }
     fill.style.transform = `scaleX(${progress})`;
   }
@@ -70,6 +74,48 @@
   }, { rootMargin:'700px' });
   warm.observe(sequence);
   orient(0,0);
+  if (chapters) {
+    help.textContent = 'Neun Orte. Neue Perspektiven.';
+    const controls = document.createElement('div');
+    controls.className = 'postcard-controls';
+    previousButton = document.createElement('button');
+    nextButton = document.createElement('button');
+    [[previousButton, '←', 'Vorheriger Ort', -1], [nextButton, '→', 'Nächster Ort', 1]].forEach(([button, arrow, label, direction]) => {
+      button.type = 'button'; button.textContent = arrow;
+      button.setAttribute('aria-label', label);
+      button.addEventListener('click', () => {
+        const index = Math.max(0, Math.min(8, current + direction));
+        load(index);
+        viewport.scrollTo({ left:slots[index].offsetLeft + slots[index].offsetWidth / 2 - viewport.clientWidth / 2, behavior:reduced.matches ? 'instant' : 'smooth' });
+      });
+      controls.append(button);
+    });
+    counter.setAttribute('aria-live', 'polite');
+    counter.removeAttribute('aria-hidden');
+    section.querySelector('.postcard-footer').append(controls);
+    previousButton.disabled = true;
+    const sync = () => {
+      if (!viewport.clientWidth) return;
+      if (innerWidth >= 1000) {
+        const page = section.closest('.chapter-page');
+        const canvasTop = viewport.getBoundingClientRect().top - page.getBoundingClientRect().top + page.scrollTop;
+        const height = Math.max(180, page.clientHeight - canvasTop - 202);
+        slots.forEach((slot, i) => {
+          const ratio = images[i].width / images[i].height;
+          slot.style.width = `${Math.round(Math.min(560, (height - 125) * ratio + 24))}px`;
+          slot.style.minWidth = '0';
+        });
+      } else slots.forEach(slot => { slot.style.removeProperty('width'); slot.style.removeProperty('min-width'); });
+      // The first and last destinations can both reach the focal position.
+      track.style.paddingLeft = `${Math.max(24, (viewport.clientWidth - slots[0].offsetWidth) / 2)}px`;
+      track.style.paddingRight = `${Math.max(24, (viewport.clientWidth - slots[8].offsetWidth) / 2)}px`;
+      nativeProgress();
+    };
+    new ResizeObserver(sync).observe(viewport);
+    document.addEventListener('chapterchange', sync);
+    sync();
+    return;
+  }
   if (!window.gsap || !window.ScrollTrigger) { nativeProgress(); return; }
   gsap.registerPlugin(ScrollTrigger);
   gsap.matchMedia().add({

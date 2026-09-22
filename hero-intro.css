@@ -1,15 +1,15 @@
-/* The pre-paint cover fails open through the independent timer in hero-intro.js. */
-html.intro-pending::before { content:""; position:fixed; inset:0; z-index:10000; background:#f3f3f1; pointer-events:none; }
-.hero-intro { position:fixed; inset:0; z-index:10001; overflow:hidden; pointer-events:none; isolation:isolate; }
-.intro-veil { position:absolute; inset:0; background:#f3f3f1; }
-.intro-photo { position:absolute; top:0; left:0; overflow:hidden; transform-origin:0 0; }
-.intro-photo img { display:block; width:100%; height:100%; object-fit:cover; filter:saturate(1.1); }
-.intro-stencil { position:absolute; inset:0; width:100%; height:100%; }
-.intro-type { font-family:Arial,Helvetica,sans-serif; font-weight:900; letter-spacing:-.055em; }
-.intro-accent { position:absolute; display:block; background:#f36c21; opacity:0; }
-.intro-accent--line { width:44px; height:3px; }
-.intro-accent--dot { width:9px; height:9px; border-radius:50%; }
-.intro-accent--bar { width:3px; height:28px; }
+/* Pre-paint cover and hero share the same charcoal surface. */
+html.intro-pending::before { content:""; position:fixed; inset:0; z-index:10000; background:#111; pointer-events:none; }
+.hero-intro { position:fixed; inset:0; z-index:10001; display:flex; align-items:center; background:#111; color:#f3f3ef; pointer-events:none; }
+.intro-type { width:calc(100% - 80px); max-width:1600px; margin:auto; font-weight:750; letter-spacing:-.065em; line-height:.94; }
+.intro-type span { display:block; white-space:nowrap; }
+.intro-type span:first-child { font-size:min(23vw,31svh); }
+.intro-type span:last-child { font-size:min(calc((100vw - 80px) * .08),12svh); margin-top:24px; }
+@media (max-width:600px) {
+  .intro-type { width:calc(100% - 36px); }
+  .intro-type span:first-child { font-size:26vw; }
+  .intro-type span:last-child { font-size:calc((100vw - 36px) * .08); margin-top:18px; }
+}
 @media (prefers-reduced-motion:reduce) {
   html.intro-pending::before, .hero-intro { display:none; }
 }

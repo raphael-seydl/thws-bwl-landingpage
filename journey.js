@@ -62,6 +62,8 @@
   journey.classList.add('journey-panels');
   let active = -1, desktop = false, trigger, layout, motion;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const chapters = document.documentElement.classList.contains('chapter-mode');
+  if (chapters) journey.querySelector('.journey-caption').textContent = 'Du startest breit, probierst dich aus und setzt nach und nach deine eigenen Schwerpunkte. Entdecke die sieben Schritte deines Studienwegs.';
   const documentTop = element => {
     let top = 0;
     for (let node = element; node; node = node.offsetParent) top += node.offsetTop;
@@ -103,6 +105,7 @@
     paint(animate);
   }
   function go(index) {
+    if (chapters) { setActive(index, !reduced.matches); return; }
     if (desktop && trigger) {
       // Land within the hold, avoiding smooth-scroll races with active state.
       window.scrollTo({ top:trigger.start + (index + .35) / 7 * (trigger.end - trigger.start), behavior:'instant' });
@@ -125,6 +128,32 @@
     });
   });
   setActive(0);
+  if (chapters) {
+    // Panel navigation is local to this chapter. No document scroll or pinning.
+    function measureChapter() {
+      if (!gallery.clientWidth) return;
+      motion?.kill();
+      desktop = innerWidth >= 1000 && innerHeight >= 700 && !!window.gsap;
+      journey.classList.toggle('journey-desktop', desktop);
+      if (desktop) {
+        const gap = 8, available = gallery.clientWidth - gap * 6;
+        layout = { gap, small:Math.round(available * .065), large:available - 6 * Math.round(available * .065) };
+        gallery.style.setProperty('--panel-width', `${layout.large}px`);
+        gallery.style.setProperty('--preview-width', `${layout.small}px`);
+        paint();
+      } else steps.forEach(step => {
+        step.style.removeProperty('transform');
+        step.style.removeProperty('clip-path');
+        step.querySelector('img').style.removeProperty('transform');
+      });
+    }
+    new ResizeObserver(measureChapter).observe(gallery);
+    document.addEventListener('chapterchange', measureChapter);
+    window.addEventListener('resize', measureChapter, { passive:true });
+    reduced.addEventListener('change', measureChapter);
+    measureChapter();
+    return;
+  }
   if (!window.gsap || !window.ScrollTrigger) return; // Readable image-card fallback.
   gsap.registerPlugin(ScrollTrigger);
   gsap.matchMedia().add({ wide:'(min-width:1000px) and (min-height:700px)', compact:'(max-width:999px), (max-height:699px)', reduce:'(prefers-reduced-motion: reduce)' }, ({ conditions }) => {

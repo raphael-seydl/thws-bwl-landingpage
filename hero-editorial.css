@@ -1,0 +1,73 @@
+/* All composition rules are local to the editorial hero. */
+.hero--editorial { background:#111; color:#f3f3ef; }
+.hero--editorial > .shell { width:min(1600px,calc(100% - 80px)); }
+.hero--editorial .hero-editorial { padding:38px 0 36px; }
+.hero-caption { display:flex; justify-content:space-between; align-items:baseline; gap:20px; }
+.hero--editorial .eyebrow { color:#bcbcb7; margin:0; font-size:.66rem; }
+.hero-discipline { margin:0; font-size:.76rem; color:#bcbcb7; }
+.hero-composition { display:grid; grid-template-columns:60% 40%; align-items:center; padding:32px 0 38px; }
+.hero--editorial .hero-staircase {
+  display:grid; grid-template-rows:repeat(4,1fr); margin:0;
+  font-size:clamp(66px,min(7.3vw,11.6svh),124px);
+  font-weight:750; line-height:1.02; letter-spacing:-.065em;
+}
+.hero-word { display:block; width:max-content; white-space:nowrap; }
+/* DOM order stays the spoken phrase; desktop placement ascends diagonally. */
+.hero-word:nth-child(1) { grid-row:4; margin-left:0; }
+.hero-word:nth-child(2) { grid-row:3; margin-left:10%; }
+.hero-word:nth-child(3) { grid-row:2; margin-left:26%; }
+.hero-word:nth-child(4) { grid-row:1; margin-left:44%; }
+.hero-topics { list-style:none; padding:0 0 0 17%; margin:0; display:flex; flex-direction:column; gap:clamp(26px,4.8svh,50px); }
+.hero-topics li { color:#ababa7; font-size:clamp(.85rem,1.18vw,1.18rem); line-height:1.35; letter-spacing:-.02em; width:fit-content; }
+.hero-topics li:nth-child(2) { margin-left:28%; }
+.hero-topics li:nth-child(3) { margin-left:9%; }
+.hero-topics li:nth-child(4) { margin-left:23%; }
+.hero-topics li:nth-child(5) { margin-left:2%; }
+.hero-bottom { display:flex; align-items:center; justify-content:space-between; gap:48px; }
+.hero--editorial .hero-text { color:#bcbcb7; font-size:.93rem; line-height:1.65; max-width:47ch; margin:0; }
+.hero--editorial .hero-actions { margin:0; flex-wrap:wrap; gap:22px; }
+.hero--editorial .text-link { font-size:.85rem; }
+.hero--editorial .facts { padding:24px 0 32px; border-top:1px solid #ffffff24; gap:0; }
+.hero--editorial .facts div { border:0!important; border-radius:0; background:none; min-height:0; padding:0 24px; }
+.hero--editorial .facts div:first-child { padding-left:0; }
+.hero--editorial .facts div + div { border-left:1px solid #ffffff24!important; }
+.hero--editorial .facts div::after { content:none; }
+.hero--editorial .facts b { font-size:1.25rem; letter-spacing:-.045em; }
+.hero--editorial .facts span { color:#ababa7; font-size:.73rem; }
+.hero--editorial a:focus-visible { outline:2px solid #f36c21; outline-offset:6px; }
+@media (max-width:1100px) {
+  .hero--editorial > .shell { width:calc(100% - 48px); }
+  .hero--editorial .hero-staircase { font-size:7.35vw; }
+  .hero-topics { padding-left:12%; gap:32px; }
+  .hero-topics li { font-size:.82rem; }
+  .hero-topics li:nth-child(4) { margin-left:12%; }
+  .hero-bottom { gap:28px; }
+  .hero--editorial .hero-actions { flex-direction:column; align-items:flex-start; gap:16px; }
+}
+@media (max-width:800px) {
+  .hero--editorial .hero-editorial { padding-top:30px; }
+  .hero-composition { grid-template-columns:1fr; padding:38px 0 28px; gap:38px; }
+  .hero--editorial .hero-staircase { font-size:10vw; }
+  .hero-topics { padding:22px 0 0; border-top:1px solid #ffffff1c; flex-direction:row; flex-wrap:wrap; gap:12px 24px; }
+  .hero-topics li:nth-child(n) { margin:0; font-size:.78rem; }
+  .hero-bottom { align-items:flex-start; }
+  .hero--editorial .facts { grid-template-columns:repeat(2,1fr); gap:24px 0; }
+  .hero--editorial .facts div:nth-child(3) { border-left:0!important; padding-left:0; }
+}
+@media (max-width:600px) {
+  .hero--editorial > .shell { width:calc(100% - 36px); }
+  .hero-caption { display:block; }
+  .hero-discipline { margin-top:12px; font-size:.75rem; }
+  .hero-composition { padding-top:34px; gap:28px; }
+  .hero--editorial .hero-staircase { font-size:11.5vw; line-height:1.03; }
+  .hero-word:nth-child(n) { grid-row:auto; }
+  .hero-word:nth-child(2) { margin-left:5%; }
+  .hero-word:nth-child(3) { margin-left:18%; }
+  .hero-word:nth-child(4) { margin-left:32%; }
+  .hero-topics { gap:10px 20px; }
+  .hero-bottom { flex-direction:column; gap:24px; }
+  .hero--editorial .hero-text { font-size:.88rem; }
+  .hero--editorial .hero-actions { flex-direction:row; align-items:center; gap:20px; }
+  .hero--editorial .facts b { font-size:1.13rem; }
+  .hero--editorial .facts div { padding-right:0; padding-left:16px; }
+}

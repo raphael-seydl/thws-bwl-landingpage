@@ -60,10 +60,10 @@
   .hero-discipline { margin-top:12px; font-size:.75rem; }
   .hero-composition { padding-top:34px; gap:28px; }
   .hero--editorial .hero-staircase { font-size:11.5vw; line-height:1.03; }
-  .hero-word:nth-child(n) { grid-row:auto; }
-  .hero-word:nth-child(2) { margin-left:5%; }
-  .hero-word:nth-child(3) { margin-left:18%; }
-  .hero-word:nth-child(4) { margin-left:32%; }
+  .hero-word:nth-child(1) { grid-row:4; margin-left:0; }
+  .hero-word:nth-child(2) { grid-row:3; margin-left:14%; }
+  .hero-word:nth-child(3) { grid-row:2; margin-left:30%; }
+  .hero-word:nth-child(4) { grid-row:1; margin-left:46%; }
   .hero-topics { gap:10px 20px; }
   .hero-bottom { flex-direction:column; gap:24px; }
   .hero--editorial .hero-text { font-size:.88rem; }

@@ -57,6 +57,10 @@
     nav.querySelector('.chapter-count').textContent = `${String(index + 1).padStart(2,'0')} / 09`;
     nav.querySelector('.chapter-progress span').style.transform = `scaleX(${(index + 1) / 9})`;
     nav.querySelector('.chapter-announcement').textContent = `Kapitel ${index + 1} von 9: ${titles[index]}`;
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      if (link.hash === `#${sections[index].id}`) link.setAttribute('aria-current', 'page');
+      else link.removeAttribute('aria-current');
+    });
     if (historyMode !== 'none') history[`${historyMode}State`](null, '', `#${target?.id || sections[index].id}`);
     document.dispatchEvent(new CustomEvent('chapterchange', { detail:{ index, page:pages[index] } }));
     if (target && target !== sections[index]) requestAnimationFrame(() => {
@@ -102,6 +106,81 @@
     img.src = `Bilder/topics/${symbols[i]}.svg`;
     img.alt = '';
     img.width = 160; img.height = 160;
-    item.replaceChildren(img, label);
+    const motion = document.createElement('span');
+    motion.className = 'topic-motion';
+    motion.append(img);
+    item.replaceChildren(motion, label);
   });
+
+  // Shared native scroll lifecycle for the two journeys. Each owns its progress
+  // and direct controls; only a fresh gesture at an endpoint changes chapters.
+  window.createChapterScroll = ({ section, id, distance, render, fallback }) => {
+    const page = section.closest('.chapter-page');
+    const space = document.createElement('div');
+    space.className = 'chapter-scroll-space';
+    space.setAttribute('aria-hidden', 'true');
+    let trigger, progress = 0, lastWheel = 0, armedAt = performance.now(), tween;
+    const enabled = () => innerWidth >= 1000 && innerHeight >= 700 && matchMedia('(pointer:fine)').matches && !reduced.matches && !!window.ScrollTrigger;
+    const stop = () => {
+      tween?.kill();
+      if (trigger) progress = trigger.progress;
+      trigger?.kill(); trigger = null;
+      space.remove();
+      page.classList.remove('chapter-scroll');
+      section.classList.remove('chapter-scroll-scene');
+    };
+    const sync = () => {
+      stop();
+      if (page.hidden) return;
+      if (!enabled()) { page.scrollTop = 0; fallback?.(progress); return; }
+      gsap.registerPlugin(ScrollTrigger);
+      const travel = Math.max(1, Math.round(distance()));
+      page.classList.add('chapter-scroll');
+      section.classList.add('chapter-scroll-scene');
+      space.style.height = `${travel}px`;
+      page.append(space);
+      page.scrollTop = progress * travel;
+      armedAt = performance.now();
+      trigger = ScrollTrigger.create({
+        id, scroller:page, start:0, end:travel,
+        onUpdate:self => { progress = self.progress; render(progress); },
+        onRefresh:self => { progress = self.progress; render(progress); }
+      });
+      render(progress);
+    };
+    const move = value => {
+      progress = Math.max(0, Math.min(1, value));
+      if (!trigger) return;
+      tween?.kill();
+      tween = gsap.to(page, { scrollTop:progress * trigger.end, duration:.6, ease:'power2.inOut', onUpdate:() => ScrollTrigger.update() });
+    };
+    page.addEventListener('wheel', event => {
+      if (!trigger || page.hidden || event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+      const now = performance.now(), fresh = now - lastWheel > 180;
+      lastWheel = now;
+      tween?.kill();
+      const forward = event.deltaY > 0;
+      const atEnd = forward ? page.scrollTop >= trigger.end - 1 : page.scrollTop <= 1;
+      if (atEnd && fresh && now - armedAt > 650 && Math.abs(event.deltaY) > 2) {
+        const index = Number(page.dataset.chapter) + (forward ? 1 : -1);
+        show(index);
+      } else if (!atEnd) armedAt = now;
+    }, { passive:true });
+    // PageDown/PageUp can also leave a completed journey without a pointer.
+    page.addEventListener('keydown', event => {
+      if (!trigger || event.target !== page) return;
+      const forward = event.key === 'PageDown';
+      if (!forward && event.key !== 'PageUp') return;
+      if (forward ? page.scrollTop >= trigger.end - 1 : page.scrollTop <= 1) {
+        event.preventDefault(); show(Number(page.dataset.chapter) + (forward ? 1 : -1));
+      }
+    });
+    let frame;
+    const schedule = () => { cancelAnimationFrame(frame); frame = requestAnimationFrame(sync); };
+    document.addEventListener('chapterchange', schedule);
+    window.addEventListener('resize', schedule, { passive:true });
+    reduced.addEventListener('change', schedule);
+    schedule();
+    return { move, sync:schedule, get enabled() { return !!trigger; } };
+  };
 })();

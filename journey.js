@@ -60,7 +60,7 @@
   navigation.prepend(counter);
   wrap.append(navigation);
   journey.classList.add('journey-panels');
-  let active = -1, desktop = false, trigger, layout, motion;
+  let active = -1, desktop = false, trigger, layout, motion, chapterScroll;
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const chapters = document.documentElement.classList.contains('chapter-mode');
   if (chapters) journey.querySelector('.journey-caption').textContent = 'Du startest breit, probierst dich aus und setzt nach und nach deine eigenen Schwerpunkte. Entdecke die sieben Schritte deines Studienwegs.';
@@ -105,7 +105,11 @@
     paint(animate);
   }
   function go(index) {
-    if (chapters) { setActive(index, !reduced.matches); return; }
+    if (chapters) {
+      chapterScroll?.move(index === 0 ? 0 : index === 6 ? 1 : (index + .5) / 7);
+      if (!chapterScroll?.enabled) setActive(index, !reduced.matches);
+      return;
+    }
     if (desktop && trigger) {
       // Land within the hold, avoiding smooth-scroll races with active state.
       window.scrollTo({ top:trigger.start + (index + .35) / 7 * (trigger.end - trigger.start), behavior:'instant' });
@@ -129,7 +133,7 @@
   });
   setActive(0);
   if (chapters) {
-    // Panel navigation is local to this chapter. No document scroll or pinning.
+    // Existing panel geometry is shared by scroll progress and direct controls.
     function measureChapter() {
       if (!gallery.clientWidth) return;
       motion?.kill();
@@ -152,6 +156,11 @@
     window.addEventListener('resize', measureChapter, { passive:true });
     reduced.addEventListener('change', measureChapter);
     measureChapter();
+    chapterScroll = window.createChapterScroll?.({
+      section:journey, id:'chapter-study-journey',
+      distance:() => Math.max(440, journey.closest('.chapter-page').clientHeight * .7) * 7,
+      render:progress => setActive(Math.min(6, Math.floor(progress * 7)), !reduced.matches)
+    });
     return;
   }
   if (!window.gsap || !window.ScrollTrigger) return; // Readable image-card fallback.

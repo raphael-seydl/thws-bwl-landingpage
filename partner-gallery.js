@@ -13,7 +13,7 @@
   const help = section.querySelector('#postcard-help');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const chapters = document.documentElement.classList.contains('chapter-mode');
-  let previousButton, nextButton;
+  let previousButton, nextButton, chapterScroll, chapterDistance = 0;
   // Deliberate order: Taiwan, Thailand, USA, then six European/Central Asian views.
   // Width is relative to the canvas; offsets are relative to its free vertical space.
   const art = [
@@ -47,7 +47,7 @@
     fill.style.transform = `scaleX(${progress})`;
   }
   function nativeProgress() {
-    if (cinematic) return;
+    if (cinematic || chapterScroll?.enabled) return;
     const middle = viewport.scrollLeft + viewport.clientWidth / 2;
     let closest = 0, nearest = Infinity;
     slots.forEach((slot,i) => {
@@ -62,7 +62,9 @@
     if (!['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
     event.preventDefault();
     const next = event.key === 'Home' ? 0 : event.key === 'End' ? 8 : Math.max(0, Math.min(8,current + (event.key === 'ArrowRight' ? 1 : -1)));
-    if (cinematic && trigger) {
+    if (chapterScroll?.enabled) {
+      chapterGo(next);
+    } else if (cinematic && trigger) {
       const x = Math.max(0,Math.min(distance,metrics[next].center - viewport.clientWidth * .46));
       window.scrollTo({ top:trigger.start + (x / Math.max(1,distance)) * travel, behavior:'instant' });
     } else viewport.scrollTo({ left:slots[next].offsetLeft + slots[next].offsetWidth / 2 - viewport.clientWidth / 2, behavior:reduced.matches ? 'instant' : 'smooth' });
@@ -74,6 +76,12 @@
   }, { rootMargin:'700px' });
   warm.observe(sequence);
   orient(0,0);
+  function chapterGo(index) {
+    load(index);
+    const left = slots[index].offsetLeft + slots[index].offsetWidth / 2 - viewport.clientWidth / 2;
+    if (chapterScroll?.enabled) chapterScroll.move(left / Math.max(1, chapterDistance));
+    else viewport.scrollTo({ left, behavior:reduced.matches ? 'instant' : 'smooth' });
+  }
   if (chapters) {
     help.textContent = 'Neun Orte. Neue Perspektiven.';
     const controls = document.createElement('div');
@@ -85,8 +93,7 @@
       button.setAttribute('aria-label', label);
       button.addEventListener('click', () => {
         const index = Math.max(0, Math.min(8, current + direction));
-        load(index);
-        viewport.scrollTo({ left:slots[index].offsetLeft + slots[index].offsetWidth / 2 - viewport.clientWidth / 2, behavior:reduced.matches ? 'instant' : 'smooth' });
+        chapterGo(index);
       });
       controls.append(button);
     });
@@ -98,7 +105,7 @@
       if (!viewport.clientWidth) return;
       if (innerWidth >= 1000) {
         const page = section.closest('.chapter-page');
-        const canvasTop = viewport.getBoundingClientRect().top - page.getBoundingClientRect().top + page.scrollTop;
+        const canvasTop = viewport.getBoundingClientRect().top - section.getBoundingClientRect().top;
         const height = Math.max(180, page.clientHeight - canvasTop - 202);
         slots.forEach((slot, i) => {
           const ratio = images[i].width / images[i].height;
@@ -114,6 +121,32 @@
     new ResizeObserver(sync).observe(viewport);
     document.addEventListener('chapterchange', sync);
     sync();
+    chapterScroll = window.createChapterScroll?.({
+      section, id:'chapter-international',
+      distance:() => {
+        track.style.removeProperty('transform');
+        viewport.scrollLeft = 0;
+        sync();
+        chapterDistance = Math.max(1, track.scrollWidth - viewport.clientWidth);
+        return chapterDistance;
+      },
+      render:progress => {
+        const x = progress * chapterDistance;
+        gsap.set(track, { x:-x, force3D:false });
+        let nearest = Infinity, index = 0;
+        slots.forEach((slot,i) => {
+          const delta = Math.abs(slot.offsetLeft + slot.offsetWidth / 2 - x - viewport.clientWidth / 2);
+          if (delta < nearest) { nearest = delta; index = i; }
+        });
+        load(index); load(index + 1);
+        orient(index, progress);
+      },
+      fallback:progress => {
+        track.style.removeProperty('transform');
+        viewport.scrollLeft = progress * Math.max(0, track.scrollWidth - viewport.clientWidth);
+        nativeProgress();
+      }
+    });
     return;
   }
   if (!window.gsap || !window.ScrollTrigger) { nativeProgress(); return; }

@@ -177,6 +177,10 @@ html.chapter-mode { overflow:hidden; background:#111; scroll-behavior:auto; }
 .chapter-page .focus-box > .picker > p:not(.eyebrow) { color:#64645c; }
 .chapter-page > .cta { display:flex; align-items:center; }
 .chapter-page > .cta > .shell { margin-block:0; }
+/* Let the final chapter grow when its copy, actions and footer exceed the viewport. */
+.chapter-page[data-chapter="8"] > .cta { flex:1 0 auto; min-height:auto; }
+.chapter-page[data-chapter="8"] .footer { flex-shrink:0; }
+.chapter-page[data-chapter="8"] .footer a[href^="mailto:"] { overflow-wrap:anywhere; }
 /* Native scroll supplies progress; sticky keeps the composition in its chapter. */
 .chapter-page.chapter-scroll > .chapter-scroll-scene { position:sticky; top:0; height:100%; min-height:100%; }
 .chapter-scroll-space { pointer-events:none; }
@@ -191,6 +195,9 @@ html.chapter-mode { overflow:hidden; background:#111; scroll-behavior:auto; }
 @media (max-width:800px) {
   .chapter-page .focus-box { grid-template-columns:1fr; }
   .chapter-page .nav-links { gap:18px; padding-inline:18px; }
+  .chapter-page[data-chapter="8"] > .cta { padding-block:clamp(20px,4vh,32px); }
+  .chapter-page[data-chapter="8"] .cta-bottom { gap:clamp(16px,3vh,25px); }
+  .chapter-page[data-chapter="8"] .footer { row-gap:clamp(12px,2.5vh,20px); }
 }
 @media (max-width:550px) {
   .chapter-page .hero--editorial .nav { height:auto; min-height:112px; flex-wrap:wrap; padding-bottom:14px; gap:0 12px; }

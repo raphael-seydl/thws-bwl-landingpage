@@ -430,7 +430,7 @@ additionalInterests.forEach(([label,matches])=>{
  matches.forEach(([id,weight,reason])=>{focusCatalog[id][2][index]=weight;focusCatalog[id][3][index]=reason});
 });
 const focusIntro=document.querySelector('.focus-box > div > p:not(.eyebrow)');
-if(focusIntro)focusIntro.textContent='Wähle bis zu zwei Themen, die dich wirklich interessieren. Dein Studium bietet dir Raum, aus 19 Vertiefungen zu wählen.';
+if(focusIntro)focusIntro.textContent='Wähle bis zu zwei Themen, die dich wirklich interessieren. Dein Studium bietet dir Raum, aus 16 Schwerpunkten zu wählen.';
 function recommend(){
  if(f.length!==2)return null;
  const selected=f.map(area=>areas.indexOf(area)).sort((a,b)=>a-b);
